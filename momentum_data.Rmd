@@ -1,0 +1,30 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+df <- momentum_data %>% 
+  filter(X1 == "Meditate") %>% 
+  gather() %>%  # this makes it tidier!
+  mutate(dt = as.Date(key, "%m/%d/%y")) %>%   # converting dates properly always takes longer than you'd expect
+  rename(meditate = value) %>% 
+  select(dt, meditate) %>% # only keeping date and binary meditate here
+  filter(meditate != "Meditate") # get rid of first row that is left over from the gather()
+
+df %>% write_csv("momentum_data_clean.csv")
+```
+
+Add a lag variable to see how previous day predicts the next day
+
+```{r}
+df %>%
+  select(1)
+```
+
+
