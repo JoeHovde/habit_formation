@@ -24,7 +24,27 @@ Add a lag variable to see how previous day predicts the next day
 
 ```{r}
 df %>%
-  select(1)
+  filter(dt > '2018-08-06') %>% 
+  mutate(lead = lead(meditate)) %>% # what did I do the day before?
+  group_by(lead) %>% 
+  summarise(meditate_percentage = mean(as.numeric(meditate), na.rm = T)) %>% 
+  filter(! is.na(lead)) %>% 
+  ggplot(aes(x = lead, y = meditate_percentage)) +
+  geom_col(fill = "navyblue") +
+  geom_text(label = c("No", "Yes"),
+            color = "white",
+            position = position_stack(.5)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     breaks = c(.1, .2, .3, .4, .5, .6, .7)) +
+  theme(legend.position = "none",
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(colour = "lightgrey"),
+        panel.grid.minor = element_blank()) +
+  scale_x_discrete(breaks = NULL) +
+  labs(x = "Did I Meditate the Previous Day?",
+       y = "Probability of Meditating",
+       title = "I am more than twice as likely to meditate on a given day \nif I meditated the day before")
+
 ```
 
 
